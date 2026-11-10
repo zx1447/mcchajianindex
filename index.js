@@ -1,36 +1,9 @@
 process.env.TZ = 'Asia/Shanghai';
-process.env.UV_THREADPOOL_SIZE = String(Math.max(Number(process.env.UV_THREADPOOL_SIZE || 4), 12));
 const { spawn, execSync, exec } = require('child_process');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
 const os = require('os');
-(function initContainerGoRuntimeGuard() {
-    if (process.env.GOMEMLIMIT && process.env.GOGC) return;
-    let limitBytes = os.totalmem();
-    for (const p of ['/sys/fs/cgroup/memory.max', '/sys/fs/cgroup/memory/memory.limit_in_bytes']) {
-        try {
-            if (!fsSync.existsSync(p)) continue;
-            const raw = fsSync.readFileSync(p, 'utf8').trim();
-            if (!raw || raw === 'max') continue;
-            const val = Number(raw);
-            if (Number.isFinite(val) && val > 32 * 1024 * 1024 && val < limitBytes) {
-                limitBytes = val;
-            }
-        } catch (e) {}
-    }
-    const mb = Math.floor(limitBytes / (1024 * 1024));
-    if (!process.env.GOMEMLIMIT) {
-        if (mb <= 600) process.env.GOMEMLIMIT = '96MiB';
-        else if (mb <= 1200) process.env.GOMEMLIMIT = '160MiB';
-        else if (mb <= 2500) process.env.GOMEMLIMIT = '256MiB';
-    }
-    if (!process.env.GOGC) {
-        if (mb <= 600) process.env.GOGC = '35';
-        else if (mb <= 1200) process.env.GOGC = '45';
-        else if (mb <= 2500) process.env.GOGC = '60';
-    }
-})();
 const crypto = require('crypto');
 const NETWORK_CODES = ['ECONNREFUSED','ECONNRESET','ECONNABORTED','ETIMEDOUT','ENOTFOUND','ENETUNREACH','EPIPE','EHOSTUNREACH'];
 const nativeAxios = require('axios');
