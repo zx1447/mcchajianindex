@@ -17296,7 +17296,8 @@ app.get('/proxy', requireAuth, (req, res) => {
                     const subscriptionInput = document.getElementById('proxy-subscription-link');
                     if (subscriptionInput) {
                         // ★ 订阅接口跑在面板端口（PORT），不是代理端口（PROXY_PORT=8080）
-                        subscriptionInput.value = 'http://' + d.serverIp + ':' + d.panelPort + '/api/proxy/subscription/' + proxySubscriptionToken + '?useLocalIp=1';
+                        // v2rayn 等客户端要求订阅链接必须使用 HTTPS 协议
+                        subscriptionInput.value = 'https://' + d.serverIp + ':' + d.panelPort + '/api/proxy/subscription/' + proxySubscriptionToken + '?useLocalIp=1';
                     }
                 }
 
