@@ -15897,6 +15897,7 @@ app.post('/api/proxy/status', requireAuth, async (req, res) => {
         latestLogId: proxyServerLogSeq,
         serverIp: _subServerIp,
         proxyPort: PROXY_PORT,
+        panelPort: PORT,
         localIp: getLocalIPv4()
     });
 });
@@ -17294,7 +17295,8 @@ app.get('/proxy', requireAuth, (req, res) => {
                 if (d.serverIp && d.proxyPort) {
                     const subscriptionInput = document.getElementById('proxy-subscription-link');
                     if (subscriptionInput) {
-                        subscriptionInput.value = 'http://' + d.serverIp + ':' + d.proxyPort + '/api/proxy/subscription/' + proxySubscriptionToken + '?useLocalIp=1';
+                        // ★ 订阅接口跑在面板端口（PORT），不是代理端口（PROXY_PORT=8080）
+                        subscriptionInput.value = 'http://' + d.serverIp + ':' + d.panelPort + '/api/proxy/subscription/' + proxySubscriptionToken + '?useLocalIp=1';
                     }
                 }
 
